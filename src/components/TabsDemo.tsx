@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -10,9 +11,12 @@ import {
   TabsContents,
 } from "@/components/ui/shadcn-io/tabs";
 import { Label } from "@/components/ui/label";
-import { Eye } from "lucide-react";
+import { Eye } from "@/icons/Eye";
+import { EyeClose } from "@/icons/EyeClose";
 
 export default function TabsDemo() {
+  const [showSignUpPassword, setShowSignUpPassword] = useState(false);
+  const [showSignInPassword, setShowSignInPassword] = useState(false);
   return (
     <Tabs defaultValue="account" className="w-[400px] bg-muted rounded-lg">
       <TabsList className="grid w-full grid-cols-2">
@@ -33,11 +37,25 @@ export default function TabsDemo() {
             </div>
             <div className="space-y-1">
               <Label htmlFor="signup-password">Password</Label>
-              <Input id="signup-password" type="password" defaultValue="" />
+              <div className="relative">
+                <Input
+                  id="signup-password"
+                  type={showSignUpPassword ? "text" : "password"}
+                  defaultValue=""
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSignUpPassword(!showSignUpPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none  "
+                >
+                  {showSignUpPassword ? <EyeClose /> : <Eye />}
+                </button>
+              </div>
             </div>
           </form>
 
-          <Button>Save changes</Button>
+          <Button>Sign Up</Button>
         </TabsContent>
         <TabsContent value="password" className="space-y-6 p-6">
           <p className="text-sm text-muted-foreground">
@@ -49,34 +67,23 @@ export default function TabsDemo() {
               <Label htmlFor="signin-username">Username</Label>
               <Input id="signin-username" defaultValue="" />
             </div>
-            <div className="space-y-1 relative">
+            <div className="space-y-1">
               <Label htmlFor="signin-password">Password</Label>
-              <Input id="signin-password" type="password" />
-              <div>
-                <Eye />
+              <div className="relative">
+                <Input
+                  id="signin-password"
+                  type={showSignInPassword ? "text" : "password"}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSignInPassword(!showSignInPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                >
+                  {showSignInPassword ? <EyeClose /> : <Eye />}
+                </button>
               </div>
             </div>
-
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="size-6"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-              />
-            </svg>
-
             <Button type="submit">Sign In</Button>
           </form>
         </TabsContent>
