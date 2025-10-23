@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import AuthPage from "../components/AuthPage";
 import { ModeToggle } from "@/components/ui/ModeToggle";
-import { MainPage } from "@/components/MainPage";
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -47,7 +46,7 @@ export default function Home() {
       <div className="absolute z-10 bottom-0 right-0 p-4">
         <ModeToggle />
       </div>
-      {isLoggedIn ? <MainPage /> : <AuthPage />}
+      <AuthPage />
     </div>
   );
 }

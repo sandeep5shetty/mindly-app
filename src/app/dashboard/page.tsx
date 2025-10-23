@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SidebarPage } from "@/components/SidebarPage";
+import { MainPage } from "@/components/MainPage";
+import { ModeToggle } from "@/components/ui/ModeToggle";
 
 export default function Dashboard() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -37,7 +38,10 @@ export default function Dashboard() {
 
   return (
     <div>
-      <SidebarPage />
+      <div className="absolute z-10 bottom-0 right-0 p-4">
+        <ModeToggle />
+      </div>
+      <MainPage />
     </div>
   );
 }
