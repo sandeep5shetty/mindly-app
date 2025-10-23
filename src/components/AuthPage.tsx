@@ -14,18 +14,18 @@ import { Label } from "@/components/ui/label";
 import { Eye } from "@/icons/Eye";
 import { EyeClose } from "@/icons/EyeClose";
 
-export default function TabsDemo() {
+export default function AuthPage() {
   const [showSignUpPassword, setShowSignUpPassword] = useState(false);
   const [showSignInPassword, setShowSignInPassword] = useState(false);
   return (
-    <Tabs defaultValue="account" className="w-[400px] bg-muted rounded-lg">
+    <Tabs defaultValue="signup" className="w-[400px] bg-muted rounded-lg">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="account">Sign Up </TabsTrigger>
-        <TabsTrigger value="password">Sign In </TabsTrigger>
+        <TabsTrigger value="signup">Sign Up </TabsTrigger>
+        <TabsTrigger value="signin">Sign In </TabsTrigger>
       </TabsList>
 
       <TabsContents className="mx-1 mb-1 -mt-2 rounded-sm h-full bg-background">
-        <TabsContent value="account" className="space-y-6 p-6">
+        <TabsContent value="signup" className="space-y-6 p-6">
           <p className="text-sm text-muted-foreground">
             Create your new account with Username and Password.
           </p>
@@ -57,7 +57,7 @@ export default function TabsDemo() {
 
           <Button>Sign Up</Button>
         </TabsContent>
-        <TabsContent value="password" className="space-y-6 p-6">
+        <TabsContent value="signin" className="space-y-6 p-6">
           <p className="text-sm text-muted-foreground">
             Sign in to your account.
           </p>
@@ -84,8 +84,8 @@ export default function TabsDemo() {
                 </button>
               </div>
             </div>
-            <Button type="submit">Sign In</Button>
           </form>
+          <Button type="submit">Sign In</Button>
         </TabsContent>
       </TabsContents>
     </Tabs>
