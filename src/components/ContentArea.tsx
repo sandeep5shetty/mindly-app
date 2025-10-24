@@ -12,12 +12,40 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import CardComponent from "./CardComponent";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+interface ContentItem {
+  id?: string;
+  title: string;
+  description: string;
+  link?: string;
+  type?: "youtube" | "twitter" | "other";
+}
 
 export const ContentArea = () => {
+  const [contents, setContents] = useState<ContentItem[]>([]);
+
+  useEffect(() => {
+    console.log("sdvrfbvfdb");
+    axios
+      .get("http://localhost:3002/api/v1/content", {
+        headers: {
+          Authorization:
+            "eyJhbGciOiJIUzI1NiJ9.U0FORFk.J4u9hIaI9v4i2gYHoOLjC1tpYHWinXAGUa0lxudtnuU",
+        },
+      })
+      .then((res) => {
+        console.log("response is :", res);
+        setContents(res.data.data);
+        console.log("contensssssss ", res.data.data);
+      });
+  }, []);
+
   return (
-    <div className="flex flex-1">
-      <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-2xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
-        <div className="flex gap-2 justify-center mt-4">
+    <div className="flex flex-1 h-full">
+      <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-2xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900 overflow-hidden">
+        <div className="flex gap-2 justify-center mt-4 shrink-0">
           <Dialog>
             <form>
               <DialogTrigger asChild>
@@ -87,10 +115,19 @@ export const ContentArea = () => {
         ></blockquote>
         <script async src="//www.instagram.com/embed.js"></script>
       </div> */}
-        <CardComponent
-          title={"I am Title"}
-          description={"This is a temp description"}
-        />
+        <div className="flex-1 overflow-y-auto">
+          <div className="grid max-sm:grid-cols-1 grid-cols-2 lg:grid-cols-3 my-6 justify-items-center place-items-center gap-4">
+            {contents.map((content: ContentItem, index: number) => (
+              <CardComponent
+                key={content.id || index}
+                title={content.title}
+                description={content.description}
+                link={content.link}
+                type={content.type}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
