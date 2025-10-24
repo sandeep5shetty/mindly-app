@@ -25,22 +25,53 @@ interface ContentItem {
 
 export const ContentArea = () => {
   const [contents, setContents] = useState<ContentItem[]>([]);
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [link, setLink] = useState("");
+  const [contentType, setContentType] = useState("");
+  const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    console.log("sdvrfbvfdb");
     axios
-      .get("http://localhost:3002/api/v1/content", {
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/content`, {
         headers: {
           Authorization:
             "eyJhbGciOiJIUzI1NiJ9.U0FORFk.J4u9hIaI9v4i2gYHoOLjC1tpYHWinXAGUa0lxudtnuU",
         },
       })
       .then((res) => {
-        console.log("response is :", res);
         setContents(res.data.data);
-        console.log("contensssssss ", res.data.data);
       });
   }, []);
+
+  const handleCreateContent = async () => {
+    console.log("To be passed title: ", title);
+    console.log("To be passed desc: ", desc);
+    console.log("To be passed link: ", link);
+    console.log("To be passed type: ", contentType);
+    console.log("To be passed tags: ", tags);
+
+    const res = await axios.put(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/content/create`,
+      {
+        link: link,
+        type: contentType,
+        title: title,
+        tags: [],
+      },
+      {
+        headers: {
+          Authorization:
+            "eyJhbGciOiJIUzI1NiJ9.U0FORFk.J4u9hIaI9v4i2gYHoOLjC1tpYHWinXAGUa0lxudtnuU",
+        },
+      }
+    );
+
+    console.log("Response : ", res.data.data);
+    contents.push(res.data.data);
+    console.log("_________________");
+    console.log("Now contents are : ", contents);
+  };
 
   return (
     <div className="flex flex-1 h-full">
@@ -68,6 +99,10 @@ export const ContentArea = () => {
                     <Input
                       id="title"
                       name="title"
+                      value={title}
+                      onChange={(e) => {
+                        setTitle(e.target.value);
+                      }}
                       placeholder="Enter content title"
                     />
                   </div>
@@ -76,6 +111,10 @@ export const ContentArea = () => {
                     <Input
                       id="description"
                       name="description"
+                      value={desc}
+                      onChange={(e) => {
+                        setDesc(e.target.value);
+                      }}
                       placeholder="Enter content description"
                     />
                   </div>
@@ -84,6 +123,10 @@ export const ContentArea = () => {
                     <Input
                       id="link"
                       name="link"
+                      value={link}
+                      onChange={(e) => {
+                        setLink(e.target.value);
+                      }}
                       placeholder="Enter content link"
                     />
                   </div>
@@ -92,6 +135,10 @@ export const ContentArea = () => {
                     <Input
                       id="type"
                       name="type"
+                      value={contentType}
+                      onChange={(e) => {
+                        setContentType(e.target.value);
+                      }}
                       placeholder="Enter content type"
                     />
                   </div>
@@ -100,7 +147,15 @@ export const ContentArea = () => {
                   <DialogClose asChild>
                     <Button variant="outline">Cancel</Button>
                   </DialogClose>
-                  <Button type="submit">Save Content</Button>
+                  <DialogClose asChild>
+                    <Button
+                      type="submit"
+                      className="cursor-pointer"
+                      onClick={handleCreateContent}
+                    >
+                      Save Content
+                    </Button>
+                  </DialogClose>
                 </DialogFooter>
               </DialogContent>
             </form>
