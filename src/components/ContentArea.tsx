@@ -20,7 +20,7 @@ interface ContentItem {
   title: string;
   description: string;
   link?: string;
-  type?: "youtube" | "twitter" | "other";
+  type?: "youtube" | "linkedin" | "insta" | "x" | "facebook" | "other";
 }
 
 export const ContentArea = () => {
@@ -36,7 +36,7 @@ export const ContentArea = () => {
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/content`, {
         headers: {
           Authorization:
-            "eyJhbGciOiJIUzI1NiJ9.U0FORFk.J4u9hIaI9v4i2gYHoOLjC1tpYHWinXAGUa0lxudtnuU",
+            "eyJhbGciOiJIUzI1NiJ9.dGVzdA.QLMkWa1hvtQ5xjuVw3RECAAqljek89WLMAAj--EJ3YI",
         },
       })
       .then((res) => {
@@ -62,15 +62,15 @@ export const ContentArea = () => {
       {
         headers: {
           Authorization:
-            "eyJhbGciOiJIUzI1NiJ9.U0FORFk.J4u9hIaI9v4i2gYHoOLjC1tpYHWinXAGUa0lxudtnuU",
+            "eyJhbGciOiJIUzI1NiJ9.dGVzdA.QLMkWa1hvtQ5xjuVw3RECAAqljek89WLMAAj--EJ3YI",
         },
       }
     );
 
     console.log("Response : ", res.data.data);
-    contents.push(res.data.data);
+    setContents([...contents, res.data.data]);
     console.log("_________________");
-    console.log("Now contents are : ", contents);
+    console.log("Now contents are : ", [...contents, res.data.data]);
   };
 
   return (
@@ -174,13 +174,76 @@ export const ContentArea = () => {
           <div className="grid max-sm:grid-cols-1 grid-cols-2 lg:grid-cols-3 my-6 justify-items-center place-items-center gap-4">
             {contents.map((content: ContentItem, index: number) => (
               <CardComponent
-                key={content.id || index}
+                key={index}
                 title={content.title}
                 description={content.description}
                 link={content.link}
                 type={content.type}
               />
             ))}
+            {/*  <CardComponent
+              key={15}
+              title={"hey there"}
+              description={"this is a simple desc"}
+              link={
+                "https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fpermalink.php%3Fstory_fbid%3Dpfbid0ndNs6TCiEaiEVNzJnDud8ptxD8Do6btY2eTHFg7c98yLoN5DXyhpoUUA14y63cLul%26id%3D100068696243760&show_text=false&width=500"
+              }
+              type={"facebook"}
+            />
+            <CardComponent
+              key={16}
+              title={"hey there"}
+              description={"this is a simple desc"}
+              link={
+                "https://twitter.com/PixelAndBracket/status/1356633038717923333"
+              }
+              type={"x"}
+            />
+            <CardComponent
+              key={20}
+              title={"hey there"}
+              description={"this is a simple desc"}
+              // link={"https://www.instagram.com/p/CUbHfhpswxt/"}
+              link={"https://www.instagram.com/p/C1y0eb8RNFX/"}
+              type={"insta"}
+            />
+            <CardComponent
+              key={21}
+              title={"hey there"}
+              description={"this is a simple desc"}
+              // link={"https://www.instagram.com/p/CUbHfhpswxt/"}
+              link={"https://www.instagram.com/p/DQMWoIckiPh/"}
+              type={"insta"}
+            />
+            <CardComponent
+              key={17}
+              title={"hey there"}
+              description={"this is a simple desc"}
+              // link={"https://www.youtube.com/watch?v=d-qqom30TZA"}
+              link={"https://youtu.be/ENmCaY5M3v4?si=ScBwPP0A5bl5lRY4"}
+              type={"youtube"}
+            />
+            <CardComponent
+              key={18}
+              title={"hey there"}
+              description={"this is a simple desc"}
+               link={
+                "https://www.linkedin.com/embed/feed/update/urn:li:share:6892528764350185473"
+              } 
+              link={
+                "https://www.linkedin.com/embed/feed/update/urn:li:share:7385671313589317632?collapsed=1"
+              }
+              type={"linkedin"}
+            />
+            <CardComponent
+              key={19}
+              title={"hey there"}
+              description={"this is a simple desc"}
+              link={
+                "https://twitter.com/PixelAndBracket/status/1356633038717923333"
+              }
+              type={"other"}
+            /> */}
           </div>
         </div>
       </div>

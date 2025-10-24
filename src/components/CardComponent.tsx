@@ -1,53 +1,68 @@
 import { useState } from "react";
-
+import {
+  FacebookEmbed,
+  InstagramEmbed,
+  LinkedInEmbed,
+  TwitterEmbed,
+  YouTubeEmbed,
+} from "react-social-media-embed";
 interface CardProps {
   title: string;
   description: string;
   link?: string;
-  type?: "youtube" | "twitter" | "other";
+  tags?: [];
+  type?: "youtube" | "linkedin" | "insta" | "x" | "facebook" | "other";
 }
 
 export default function CardComponent({
   title,
   description,
   link,
+  tags,
   type,
 }: CardProps) {
   const [contentType, setType] = useState(type);
 
   return (
-    <div className="max-w-72 m-2 bg-white text-neutral-900 p-2 rounded-md">
+    <div className="max-w-88 m-2 bg-gray-400 text-neutral-900 p-2 rounded-md">
       <h2 className="text-3xl font-medium py-2">{title}</h2>
       <p>{description}</p>
-      {contentType === "twitter" && (
-        <div className="w-full ">
-          <blockquote className="twitter-tweet">
-            <p lang="en" dir="ltr">
-              It&#39;s GSoC season again. <br></br>If you have any questions or
-              need tips, comment below.{" "}
-              <a href="https://t.co/QK0ADhLCo7">pic.twitter.com/QK0ADhLCo7</a>
-            </p>
-            &mdash; Asish Kumar (@asishcodes){" "}
-            <a href={`${link}`}>October 23, 2025</a>
-          </blockquote>
-          <script async src="https://platform.twitter.com/widgets.js"></script>
-        </div>
-      )}
 
-      {contentType === "youtube" && (
-        <div className="w-full">
+      {contentType === "x" && <TwitterEmbed url={`${link}`} />}
+      {contentType === "facebook" && (
+        <div className="w-full rounded-md overflow-hidden">
           <iframe
-            className="w-full rounded-md"
-            width="290"
-            height="200"
             src={`${link}`}
-            title="YouTube video player"
+            width="270"
+            height="270"
+            // style={{border:none; overflow:hidden}}
+            scrolling="no"
             frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
+            allowFullScreen={true}
+            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
           ></iframe>
         </div>
+      )}
+      {contentType === "insta" && (
+        <div className="w-full rounded-md overflow-hidden">
+          <InstagramEmbed url={`${link}`} width={325} height={500} />
+        </div>
+      )}
+      {contentType === "youtube" && (
+        <div className="w-full rounded-md overflow-hidden">
+          {" "}
+          <YouTubeEmbed url={`${link}`} width={320} height={220} />{" "}
+        </div>
+      )}
+      {contentType === "linkedin" && (
+        <div className="w-full rounded-md overflow-hidden">
+          <LinkedInEmbed url={`${link}`} width={335} height={500} />
+        </div>
+      )}
+      {contentType === "other" && (
+        <a className="text-blue-600 underline" href={`${link}`}>
+          {link}
+        </a>
       )}
     </div>
   );
