@@ -33,7 +33,7 @@ export default function CardComponent({
         <div className="w-full rounded-md overflow-hidden">
           <iframe
             src={`${link}`}
-            width="270"
+            width="330"
             height="270"
             // style={{border:none; overflow:hidden}}
             scrolling="no"

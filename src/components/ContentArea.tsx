@@ -11,24 +11,32 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { TagsInputComponent } from "@/components/ui/tags-input";
+import { ContentTypeCombobox } from "@/components/ui/content-type-combobox";
 import CardComponent from "./CardComponent";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Description } from "@radix-ui/react-dialog";
 import { PlaceCard } from "./PlaceCard";
 
+type TagType = {
+  _id: string;
+  title: string;
+};
+
 interface ContentItem {
   id?: string;
   title: string;
   description: string;
   link?: string;
-  tags: string[];
+  tags: TagType[];
   type?:
     | "youtube"
     | "linkedin"
     | "insta"
     | "x"
     | "facebook"
+    | "threads"
     | "other"
     | undefined;
 }
@@ -39,7 +47,7 @@ export const ContentArea = () => {
   const [desc, setDesc] = useState("");
   const [link, setLink] = useState("");
   const [contentType, setContentType] = useState("");
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState<string[]>([]);
 
   useEffect(() => {
     axios
@@ -68,7 +76,7 @@ export const ContentArea = () => {
         type: contentType,
         title: title,
         description: desc,
-        tags: [],
+        tags: tags,
       },
       {
         headers: {
@@ -82,6 +90,13 @@ export const ContentArea = () => {
     setContents([...contents, res.data.data]);
     console.log("_________________");
     console.log("Now contents are : ", [...contents, res.data.data]);
+
+    // Reset form
+    setTitle("");
+    setDesc("");
+    setLink("");
+    setContentType("");
+    setTags([]);
   };
 
   return (
@@ -143,14 +158,18 @@ export const ContentArea = () => {
                   </div>
                   <div className="grid gap-3">
                     <Label htmlFor="type">Type</Label>
-                    <Input
-                      id="type"
-                      name="type"
+                    <ContentTypeCombobox
                       value={contentType}
-                      onChange={(e) => {
-                        setContentType(e.target.value);
-                      }}
-                      placeholder="Enter content type"
+                      onChange={setContentType}
+                      placeholder="Select content type"
+                    />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="tags">Tags</Label>
+                    <TagsInputComponent
+                      value={tags}
+                      onChange={setTags}
+                      placeholder="Add tags"
                     />
                   </div>
                 </div>

@@ -12,18 +12,24 @@ import {
   YouTubeEmbed,
 } from "react-social-media-embed";
 
+type TagType = {
+  _id: string;
+  title: string;
+};
+
 // Interface for component props for type safety and reusability
 interface CardProps {
   title: string;
   description: string;
   link?: string;
-  tags?: string[];
+  tags?: TagType[];
   type:
     | "youtube"
     | "linkedin"
     | "insta"
     | "x"
     | "facebook"
+    | "threads"
     | "other"
     | undefined;
   images?: string[];
@@ -80,14 +86,18 @@ export const PlaceCard = ({
         className
       )}
     >
-      <div className="relative group h-64 link-section">
+      <div className="relative group max-h-48 overflow-y-scroll link-section">
         <div>
-          {contentType === "x" && <TwitterEmbed url={`${link}`} />}
+          {contentType === "x" && (
+            <div className="w-full rounded-b-none overflow-hidden">
+              <TwitterEmbed url={`${link}`} />
+            </div>
+          )}
           {contentType === "facebook" && (
-            <div className="w-full rounded-md overflow-hidden">
+            <div className="w-full rounded-md overflow-scroll">
               <iframe
                 src={`${link}`}
-                width="270"
+                width="320"
                 height="270"
                 // style={{border:none; overflow:hidden}}
                 scrolling="no"
@@ -98,21 +108,38 @@ export const PlaceCard = ({
             </div>
           )}
           {contentType === "insta" && (
-            <div className="w-full rounded-md overflow-hidden">
+            <div className="w-full rounded-md overflow-scroll">
               <InstagramEmbed url={`${link}`} width={325} height={500} />
             </div>
           )}
           {contentType === "youtube" && (
-            <div className="w-full rounded-md overflow-hidden">
+            <div className="w-full  overflow-hidden">
               {" "}
               <YouTubeEmbed url={`${link}`} width={320} height={220} />{" "}
             </div>
           )}
           {contentType === "linkedin" && (
-            <div className="w-full rounded-md overflow-hidden">
-              <LinkedInEmbed url={`${link}`} width={335} height={500} />
+            <div className="w-full rounded-md overflow-scroll">
+              <LinkedInEmbed url={`${link}`} width={320} height={500} />
             </div>
           )}
+          {contentType === "threads" && (
+            <div className="w-full  overflow-scroll">
+              <blockquote
+                className="text-post-media"
+                data-text-post-permalink={`${link}`}
+                data-text-post-version="0"
+                id="ig-tp-DQOQfiODdwc"
+              >
+                {" "}
+                <a href={`${link}`}>
+                  <div> View on Threads</div>
+                </a>
+              </blockquote>
+              <script async src="https://www.threads.com/embed.js"></script>
+            </div>
+          )}
+
           {contentType === "other" && (
             <a className="text-blue-600 underline" href={`${link}`}>
               {link}
@@ -122,16 +149,16 @@ export const PlaceCard = ({
       </div>
 
       {/* Content Section */}
-      <motion.div variants={contentVariants} className="p-5 pt-0 space-y-4">
+      <motion.div variants={contentVariants} className="p-5 pt-3 space-y-4">
         <div className="flex justify-between">
           <div className="flex gap-1 ">
             {tags?.map((tag) => (
               <Badge
-                key={tag}
+                key={tag._id}
                 variant="outline"
                 className="bg-background/70 backdrop-blur-sm"
               >
-                {tag}
+                {tag.title}
               </Badge>
             ))}
           </div>
