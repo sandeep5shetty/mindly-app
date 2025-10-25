@@ -14,13 +14,23 @@ import { Label } from "@/components/ui/label";
 import CardComponent from "./CardComponent";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Description } from "@radix-ui/react-dialog";
+import { PlaceCard } from "./PlaceCard";
 
 interface ContentItem {
   id?: string;
   title: string;
   description: string;
   link?: string;
-  type?: "youtube" | "linkedin" | "insta" | "x" | "facebook" | "other";
+  tags: string[];
+  type?:
+    | "youtube"
+    | "linkedin"
+    | "insta"
+    | "x"
+    | "facebook"
+    | "other"
+    | undefined;
 }
 
 export const ContentArea = () => {
@@ -57,6 +67,7 @@ export const ContentArea = () => {
         link: link,
         type: contentType,
         title: title,
+        description: desc,
         tags: [],
       },
       {
@@ -173,14 +184,27 @@ export const ContentArea = () => {
         <div className="flex-1 overflow-y-auto">
           <div className="grid max-sm:grid-cols-1 grid-cols-2 lg:grid-cols-3 my-6 justify-items-center place-items-center gap-4">
             {contents.map((content: ContentItem, index: number) => (
-              <CardComponent
+              <PlaceCard
                 key={index}
                 title={content.title}
                 description={content.description}
                 link={content.link}
                 type={content.type}
+                tags={content.tags}
               />
             ))}
+
+            {/* <PlaceCard
+              key={index}
+              title={"This is Title"}
+              description={
+                "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Facere, numquam iure"
+              }
+              type={"youtube"}
+              tags={["vsfvsf", "sdvvsv"]}
+              link={"https://youtu.be/9JyLwotmPYA?si=Fk4iWPR61x_zcM7A"}
+            />
+ */}
             {/*  <CardComponent
               key={15}
               title={"hey there"}
@@ -222,6 +246,7 @@ export const ContentArea = () => {
               // link={"https://www.youtube.com/watch?v=d-qqom30TZA"}
               link={"https://youtu.be/ENmCaY5M3v4?si=ScBwPP0A5bl5lRY4"}
               type={"youtube"}
+              
             />
             <CardComponent
               key={18}
