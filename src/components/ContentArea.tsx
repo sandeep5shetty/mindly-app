@@ -9,15 +9,18 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { TagsInputComponent } from "@/components/ui/tags-input";
 import { ContentTypeCombobox } from "@/components/ui/content-type-combobox";
-import CardComponent from "./CardComponent";
+import { PlaceCard } from "./PlaceCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Description } from "@radix-ui/react-dialog";
-import { PlaceCard } from "./PlaceCard";
 
 type TagType = {
   _id: string;
@@ -25,6 +28,7 @@ type TagType = {
 };
 
 interface ContentItem {
+  _id?: string;
   id?: string;
   title: string;
   description: string;
@@ -48,60 +52,170 @@ export const ContentArea = () => {
   const [link, setLink] = useState("");
   const [contentType, setContentType] = useState("");
   const [tags, setTags] = useState<string[]>([]);
+  const [shareLink, setShareLink] = useState("");
+  const [isSharing, setIsSharing] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return;
+    }
+
     axios
       .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/content`, {
         headers: {
-          Authorization:
-            "eyJhbGciOiJIUzI1NiJ9.dGVzdA.QLMkWa1hvtQ5xjuVw3RECAAqljek89WLMAAj--EJ3YI",
+          Authorization: token,
         },
       })
       .then((res) => {
         setContents(res.data.data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch contents:", error);
       });
   }, []);
 
   const handleCreateContent = async () => {
-    console.log("To be passed title: ", title);
-    console.log("To be passed desc: ", desc);
-    console.log("To be passed link: ", link);
-    console.log("To be passed type: ", contentType);
-    console.log("To be passed tags: ", tags);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
 
-    const res = await axios.put(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/content/create`,
-      {
-        link: link,
-        type: contentType,
-        title: title,
-        description: desc,
-        tags: tags,
-      },
-      {
-        headers: {
-          Authorization:
-            "eyJhbGciOiJIUzI1NiJ9.dGVzdA.QLMkWa1hvtQ5xjuVw3RECAAqljek89WLMAAj--EJ3YI",
+    try {
+      const res = await axios.put(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/content/create`,
+        {
+          link: link,
+          type: contentType,
+          title: title,
+          description: desc,
+          tags: tags,
         },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      console.log("Response : ", res.data.data);
+      setContents([...contents, res.data.data]);
+      console.log("_________________");
+      console.log("Now contents are : ", [...contents, res.data.data]);
+
+      // Reset form
+      setTitle("");
+      setDesc("");
+      setLink("");
+      setContentType("");
+      setTags([]);
+    } catch (error) {
+      console.error("Failed to create content:", error);
+    }
+  };
+
+  const handleShareContents = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+
+    setIsSharing(true);
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/share`,
+        {
+          share: true,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      console.log("Share API response:", res.data);
+
+      if (res.data.hash) {
+        // Create frontend share link instead of using backend link
+        const currentOrigin = window.location.origin;
+        const frontendShareLink = `${currentOrigin}/shared?id=${res.data.hash}`;
+        console.log("Current origin:", currentOrigin);
+        console.log("Generated frontend share link:", frontendShareLink);
+        setShareLink(frontendShareLink);
+      } else {
+        console.log("No hash found in response");
+        // Fallback: if no hash, try to extract it from the backend link
+        if (res.data.link && res.data.link.includes("id=")) {
+          const hashFromLink = res.data.link.split("id=")[1];
+          const frontendShareLink = `${window.location.origin}/shared?id=${hashFromLink}`;
+          console.log("Extracted hash from link:", hashFromLink);
+          console.log(
+            "Generated fallback frontend share link:",
+            frontendShareLink
+          );
+          setShareLink(frontendShareLink);
+        }
       }
-    );
+    } catch (error) {
+      console.error("Failed to generate share link:", error);
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
-    console.log("Response : ", res.data.data);
-    setContents([...contents, res.data.data]);
-    console.log("_________________");
-    console.log("Now contents are : ", [...contents, res.data.data]);
+  const handleDropdownOpen = () => {
+    // Generate share link when dropdown opens if not already generated
+    if (!shareLink && !isSharing) {
+      handleShareContents();
+    }
+  };
 
-    // Reset form
-    setTitle("");
-    setDesc("");
-    setLink("");
-    setContentType("");
-    setTags([]);
+  const handleCopyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy to clipboard:", error);
+    }
+  };
+
+  const handleDeleteContent = async (contentId: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      return;
+    }
+
+    try {
+      const res = await axios.delete(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/content/?id=${contentId}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+
+      if (res.status === 202) {
+        // Remove the deleted content from the state
+        setContents((prevContents) =>
+          prevContents.filter((content) => content._id !== contentId)
+        );
+        console.log("Content deleted successfully");
+      }
+    } catch (error) {
+      console.error("Failed to delete content:", error);
+    }
   };
 
   return (
     <div className="flex flex-1 h-full">
-      <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-2xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900 overflow-hidden">
+      <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-2xl border border-neutral-200 bg-white p-2 md:px-10 dark:border-neutral-700 dark:bg-neutral-900 overflow-hidden">
         <div className="flex gap-2 justify-center mt-4 shrink-0">
           <Dialog>
             <form>
@@ -190,6 +304,45 @@ export const ContentArea = () => {
               </DialogContent>
             </form>
           </Dialog>
+
+          {/* Share Contents Dropdown */}
+          <DropdownMenu onOpenChange={(open) => open && handleDropdownOpen()}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="cursor-pointer">
+                Share Contents
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-80 p-4">
+              <div className="space-y-3">
+                <h4 className="font-medium text-sm">Share your contents</h4>
+                <div className="flex items-center space-x-2">
+                  <Input
+                    value={isSharing ? "Generating link..." : shareLink}
+                    readOnly
+                    className="flex-1 text-xs"
+                    placeholder={
+                      isSharing
+                        ? "Generating link..."
+                        : "Share link will appear here"
+                    }
+                  />
+                  <Button
+                    size="sm"
+                    onClick={handleCopyToClipboard}
+                    className="px-3"
+                    disabled={isSharing || !shareLink}
+                  >
+                    {copySuccess ? "Copied!" : "Copy"}
+                  </Button>
+                </div>
+                {shareLink && (
+                  <p className="text-xs text-muted-foreground">
+                    Anyone with this link can view your shared contents
+                  </p>
+                )}
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* <div>
@@ -200,16 +353,18 @@ export const ContentArea = () => {
         ></blockquote>
         <script async src="//www.instagram.com/embed.js"></script>
       </div> */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
           <div className="grid max-sm:grid-cols-1 grid-cols-2 lg:grid-cols-3 my-6 justify-items-center place-items-center gap-4">
             {contents.map((content: ContentItem, index: number) => (
               <PlaceCard
-                key={index}
+                key={content._id || content.id || index}
+                id={content._id || content.id || index.toString()}
                 title={content.title}
                 description={content.description}
                 link={content.link}
                 type={content.type}
                 tags={content.tags}
+                onDelete={handleDeleteContent}
               />
             ))}
 

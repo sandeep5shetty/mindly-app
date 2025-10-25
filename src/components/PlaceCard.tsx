@@ -19,6 +19,7 @@ type TagType = {
 
 // Interface for component props for type safety and reusability
 interface CardProps {
+  id: string;
   title: string;
   description: string;
   link?: string;
@@ -34,9 +35,11 @@ interface CardProps {
     | undefined;
   images?: string[];
   className?: string;
+  onDelete?: (id: string) => void;
 }
 
 export const PlaceCard = ({
+  id,
   title,
   description,
   link,
@@ -44,6 +47,7 @@ export const PlaceCard = ({
   type,
   images,
   className,
+  onDelete,
 }: CardProps) => {
   const [contentType, setType] = useState(type);
 
@@ -86,7 +90,7 @@ export const PlaceCard = ({
         className
       )}
     >
-      <div className="relative group max-h-48 overflow-y-scroll link-section">
+      <div className="relative group max-h-48 overflow-y-scroll scrollbar-hide link-section">
         <div>
           {contentType === "x" && (
             <div className="w-full rounded-b-none overflow-hidden">
@@ -94,7 +98,7 @@ export const PlaceCard = ({
             </div>
           )}
           {contentType === "facebook" && (
-            <div className="w-full rounded-md overflow-scroll">
+            <div className="w-full rounded-md overflow-scroll scrollbar-hide">
               <iframe
                 src={`${link}`}
                 width="320"
@@ -108,7 +112,7 @@ export const PlaceCard = ({
             </div>
           )}
           {contentType === "insta" && (
-            <div className="w-full rounded-md overflow-scroll">
+            <div className="w-full rounded-md overflow-scroll scrollbar-hide">
               <InstagramEmbed url={`${link}`} width={325} height={500} />
             </div>
           )}
@@ -119,12 +123,12 @@ export const PlaceCard = ({
             </div>
           )}
           {contentType === "linkedin" && (
-            <div className="w-full rounded-md overflow-scroll">
+            <div className="w-full rounded-md overflow-scroll scrollbar-hide">
               <LinkedInEmbed url={`${link}`} width={320} height={500} />
             </div>
           )}
           {contentType === "threads" && (
-            <div className="w-full  overflow-scroll">
+            <div className="w-full overflow-scroll scrollbar-hide">
               <blockquote
                 className="text-post-media"
                 data-text-post-permalink={`${link}`}
@@ -152,9 +156,9 @@ export const PlaceCard = ({
       <motion.div variants={contentVariants} className="p-5 pt-3 space-y-4">
         <div className="flex justify-between">
           <div className="flex gap-1 ">
-            {tags?.map((tag) => (
+            {tags?.map((tag, index) => (
               <Badge
-                key={tag._id}
+                key={tag._id || tag.title || index}
                 variant="outline"
                 className="bg-background/70 backdrop-blur-sm"
               >
@@ -163,7 +167,12 @@ export const PlaceCard = ({
             ))}
           </div>
           <div className="flex gap-4">
-            <Trash2 className="cursor-pointer hover:text-gray-400 duration-200" />
+            {onDelete && (
+              <Trash2
+                className="cursor-pointer hover:text-gray-400 duration-200"
+                onClick={() => onDelete(id)}
+              />
+            )}
             <Share2 className="cursor-pointer hover:text-gray-400 duration-200" />
           </div>
         </div>

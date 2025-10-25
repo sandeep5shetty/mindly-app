@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Sidebar, SidebarBody, SidebarLink } from "./ui/sidebar";
 import {
   IconArrowLeft,
@@ -11,6 +12,13 @@ import { cn } from "@/lib/utils";
 import { ContentArea } from "./ContentArea";
 
 export function MainPage() {
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/");
+  };
+
   const links = [
     {
       label: "Dashboard",
@@ -39,6 +47,7 @@ export function MainPage() {
       icon: (
         <IconArrowLeft className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
+      onClick: handleLogout,
     },
   ];
   const [open, setOpen] = useState(false);
