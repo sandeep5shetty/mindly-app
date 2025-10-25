@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { PlaceCard } from "@/components/PlaceCard";
@@ -35,7 +35,7 @@ interface ApiResponse {
   [key: string]: unknown;
 }
 
-export default function SharedContentsPage() {
+function SharedContentsContent() {
   const [contents, setContents] = useState<ContentItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -167,5 +167,22 @@ export default function SharedContentsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function SharedContentsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 dark:border-white mx-auto mb-4"></div>
+            <p>Loading shared contents...</p>
+          </div>
+        </div>
+      }
+    >
+      <SharedContentsContent />
+    </Suspense>
   );
 }
