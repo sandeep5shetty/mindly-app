@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import Image from "next/image";
 
 interface Links {
   label: string;
@@ -119,12 +120,26 @@ export const MobileSidebar = ({
         )}
         {...props}
       >
-        <div className="flex justify-end z-20 w-full">
+        <div className="flex justify-between z-20 w-full">
           <IconMenu2
             className="text-neutral-800 dark:text-neutral-200"
             onClick={() => setOpen(!open)}
           />
+          <div className="flex gap-1 items-center">
+            <Image
+              src="/mindly.svg"
+              alt="Mindly Logo"
+              width={30}
+              height={30}
+              className="h-7 w-auto "
+            />
+            <h1 className="text-lg font-bold text-foreground tracking-wide">
+              Mindly
+            </h1>
+          </div>
+          <div className="opacity-0">svsdv</div>
         </div>
+
         <AnimatePresence>
           {open && (
             <motion.div

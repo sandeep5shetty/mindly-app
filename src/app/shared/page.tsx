@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import { PlaceCard } from "@/components/PlaceCard";
 import { ModeToggle } from "@/components/ui/ModeToggle";
+import Image from "next/image";
 
 type TagType = {
   _id: string;
@@ -128,9 +129,15 @@ function SharedContentsContent() {
       <div className="bg-white dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-700 p-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
-            <span className="font-medium text-black dark:text-white">
-              Mindly - Shared Contents
+            <Image
+              src="/mindly.svg"
+              alt="Mindly Logo"
+              width={32}
+              height={32}
+              className="h-8 w-8 shrink-0"
+            />
+            <span className="font-bold text-black dark:text-white text-lg">
+              Mindly
             </span>
           </div>
           <ModeToggle />

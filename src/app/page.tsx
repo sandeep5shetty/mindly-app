@@ -43,7 +43,7 @@ export default function Home() {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <div className="absolute z-10 bottom-0 right-0 p-4">
+      <div className="absolute z-100 top-3  right-3 ">
         <ModeToggle />
       </div>
       <AuthPage />
