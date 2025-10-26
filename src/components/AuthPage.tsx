@@ -133,7 +133,7 @@ export default function AuthPage() {
           alt="Mindly Logo"
           width={96}
           height={96}
-          className="h-24 w-auto"
+          className="h-24 w-auto "
         />
         <h1 className="text-2xl font-bold text-foreground">Mindly</h1>
         <p className="text-sm text-muted-foreground text-center">
@@ -141,14 +141,17 @@ export default function AuthPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="signin" className="w-[400px] bg-muted rounded-lg">
+      <Tabs
+        defaultValue="signin"
+        className=" max-md:w-[315px] w-[400px] bg-muted rounded-lg"
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="signin">Sign In </TabsTrigger>
           <TabsTrigger value="signup">Sign Up </TabsTrigger>
         </TabsList>
 
         <TabsContents className="mx-1 mb-1 -mt-2 rounded-sm h-full bg-background">
-          <TabsContent value="signin" className="space-y-6 p-6">
+          <TabsContent value="signin" className="space-y-6 max-sm:px-3 p-6">
             <p className="text-sm text-muted-foreground">
               Sign in to your account.
             </p>

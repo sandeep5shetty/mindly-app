@@ -68,13 +68,33 @@ export const PlaceCard = ({
 
     switch (type) {
       case "youtube":
-        return <IconBrandYoutube {...iconProps} className="text-red-500" />;
+        return (
+          <IconBrandYoutube
+            {...iconProps}
+            className="text-black dark:text-white"
+          />
+        );
       case "insta":
-        return <IconBrandInstagram {...iconProps} className="text-pink-500" />;
+        return (
+          <IconBrandInstagram
+            {...iconProps}
+            className="text-black dark:text-white"
+          />
+        );
       case "facebook":
-        return <IconBrandFacebook {...iconProps} className="text-blue-600" />;
+        return (
+          <IconBrandFacebook
+            {...iconProps}
+            className="text-black dark:text-white"
+          />
+        );
       case "linkedin":
-        return <IconBrandLinkedin {...iconProps} className="text-blue-700" />;
+        return (
+          <IconBrandLinkedin
+            {...iconProps}
+            className="text-black dark:text-white"
+          />
+        );
       case "threads":
         return (
           <IconBrandThreads
@@ -121,7 +141,7 @@ export const PlaceCard = ({
         transition: { duration: 0.2, ease: "easeOut" },
       }}
       className={cn(
-        "w-full max-w-xs overflow-hidden rounded-xl border bg-card text-card-foreground shadow-lg hover:scale-102 duration-200",
+        "w-full max-sm:w-[85%] max-w-xs overflow-hidden  rounded-xl border bg-card text-card-foreground shadow-lg hover:scale-102 duration-200",
         className
       )}
     >
@@ -192,7 +212,10 @@ export const PlaceCard = ({
       </div>
 
       {/* Content Section */}
-      <motion.div variants={contentVariants} className="p-5 pt-3 space-y-4">
+      <motion.div
+        variants={contentVariants}
+        className="max-md:p-2  p-5 pt-3 max-md:pt-3 space-y-4 max-md:space-y-2"
+      >
         <div className="flex justify-between items-center">
           <div className="flex gap-1 flex-wrap">
             {tags?.map((tag, index) => (

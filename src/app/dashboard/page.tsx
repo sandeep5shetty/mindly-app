@@ -38,7 +38,7 @@ export default function Dashboard() {
 
   return (
     <div className="h-screen">
-      <div className="absolute z-10 bottom-0 right-0 p-4">
+      <div className="absolute z-10  bottom-0 right-0 p-4">
         <ModeToggle />
       </div>
       <MainPage />

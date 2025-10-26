@@ -22,6 +22,7 @@ import { PlaceCard } from "./PlaceCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { IconPlus, IconShare3 } from "@tabler/icons-react";
 
 type TagType = {
   _id: string;
@@ -233,14 +234,14 @@ export const ContentArea = () => {
       success: () => {
         // Clear the share link when sharing is stopped
         setShareLink("");
-        console.log("Content sharing stopped successfully");
+        console.log("Content sharing stopped");
         // Close the dropdown after stopping sharing
         setIsDropdownOpen(false);
-        return "Content sharing stopped successfully!";
+        return "Content sharing stopped ";
       },
       error: (error) => {
-        console.error("Failed to stop sharing:", error);
-        return "Failed to stop sharing";
+        console.error("Failed to stop", error);
+        return "Failed to stop";
       },
     });
   };
@@ -255,12 +256,12 @@ export const ContentArea = () => {
       await navigator.clipboard.writeText(shareLink);
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
-      toast.success("Share link copied to clipboard!");
+      toast.success("Share link Copied");
       // Close the dropdown after copying
       setIsDropdownOpen(false);
     } catch (error) {
-      console.error("Failed to copy to clipboard:", error);
-      toast.error("Failed to copy link to clipboard");
+      console.error("Failed to Copy", error);
+      toast.error("Failed to Copy");
     }
   };
 
@@ -278,7 +279,7 @@ export const ContentArea = () => {
       const contentLink = content.link;
 
       if (!contentLink) {
-        toast.error("No link available for this content");
+        toast.error("Link not available for this content");
         return;
       }
 
@@ -289,10 +290,10 @@ export const ContentArea = () => {
       console.log(`Content link copied to clipboard: ${contentLink}`);
 
       // Success toast notification
-      toast.success(`Link for "${contentTitle}" copied to clipboard!`);
+      toast.success(`Link Copied`);
     } catch (error) {
       console.error("Failed to copy content link:", error);
-      toast.error("Failed to copy link to clipboard");
+      toast.error("Failed to copy");
     }
   };
 
@@ -318,7 +319,7 @@ export const ContentArea = () => {
     );
 
     toast.promise(deletePromise, {
-      loading: `Deleting "${contentTitle}"...`,
+      loading: `Deleting...`,
       success: (res) => {
         if (res.status === 202) {
           // Remove the deleted content from the state
@@ -326,12 +327,12 @@ export const ContentArea = () => {
             prevContents.filter((content) => content._id !== contentId)
           );
           console.log("Content deleted successfully");
-          return `"${contentTitle}" deleted successfully!`;
+          return "Content deleted successfully";
         }
         return "Content deleted!";
       },
       error: (error) => {
-        console.error("Failed to delete content:", error);
+        console.error("Failed to delete", error);
         return `Failed to delete "${contentTitle}"`;
       },
     });
@@ -345,7 +346,7 @@ export const ContentArea = () => {
             <form>
               <DialogTrigger asChild>
                 <Button variant="default" className="cursor-pointer">
-                  {" "}
+                  <IconPlus className="h-4 w-4 " />
                   Create Content
                 </Button>
               </DialogTrigger>
@@ -442,6 +443,7 @@ export const ContentArea = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="cursor-pointer">
                 Share Contents
+                <IconShare3 className="h-4 w-4 " />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-80 p-4">
