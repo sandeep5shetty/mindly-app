@@ -21,6 +21,7 @@ import { ContentTypeCombobox } from "@/components/ui/content-type-combobox";
 import { PlaceCard } from "./PlaceCard";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 type TagType = {
   _id: string;
@@ -55,6 +56,7 @@ export const ContentArea = () => {
   const [shareLink, setShareLink] = useState("");
   const [isSharing, setIsSharing] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -167,11 +169,46 @@ export const ContentArea = () => {
     }
   };
 
-  const handleDropdownOpen = () => {
-    // Generate share link when dropdown opens if not already generated
-    if (!shareLink && !isSharing) {
-      handleShareContents();
+  const handleStopSharing = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.error("No token found");
+      toast.error("Authentication required");
+      return;
     }
+
+    const stopSharingPromise = axios.post(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/share`,
+      {
+        share: false,
+      },
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    toast.promise(stopSharingPromise, {
+      loading: "Stopping content sharing...",
+      success: () => {
+        // Clear the share link when sharing is stopped
+        setShareLink("");
+        console.log("Content sharing stopped successfully");
+        // Close the dropdown after stopping sharing
+        setIsDropdownOpen(false);
+        return "Content sharing stopped successfully!";
+      },
+      error: (error) => {
+        console.error("Failed to stop sharing:", error);
+        return "Failed to stop sharing";
+      },
+    });
+  };
+
+  const handleDropdownOpen = () => {
+    // Dropdown opened - no automatic link generation
+    // User will manually click "Generate Link" button
   };
 
   const handleCopyToClipboard = async () => {
@@ -179,8 +216,44 @@ export const ContentArea = () => {
       await navigator.clipboard.writeText(shareLink);
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
+      toast.success("Share link copied to clipboard!");
+      // Close the dropdown after copying
+      setIsDropdownOpen(false);
     } catch (error) {
       console.error("Failed to copy to clipboard:", error);
+      toast.error("Failed to copy link to clipboard");
+    }
+  };
+
+  const handleShareIndividualContent = async (contentId: string) => {
+    try {
+      // Find the content to get its link and title
+      const content = contents.find((c) => (c._id || c.id) === contentId);
+
+      if (!content) {
+        toast.error("Content not found");
+        return;
+      }
+
+      const contentTitle = content.title || "content";
+      const contentLink = content.link;
+
+      if (!contentLink) {
+        toast.error("No link available for this content");
+        return;
+      }
+
+      // Copy the content's link to clipboard
+      await navigator.clipboard.writeText(contentLink);
+
+      // Show success feedback
+      console.log(`Content link copied to clipboard: ${contentLink}`);
+
+      // Success toast notification
+      toast.success(`Link for "${contentTitle}" copied to clipboard!`);
+    } catch (error) {
+      console.error("Failed to copy content link:", error);
+      toast.error("Failed to copy link to clipboard");
     }
   };
 
@@ -188,29 +261,41 @@ export const ContentArea = () => {
     const token = localStorage.getItem("token");
     if (!token) {
       console.error("No token found");
+      toast.error("Authentication required");
       return;
     }
 
-    try {
-      const res = await axios.delete(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/content/?id=${contentId}`,
-        {
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+    // Find the content to get its title for better UX
+    const content = contents.find((c) => (c._id || c.id) === contentId);
+    const contentTitle = content?.title || "content";
 
-      if (res.status === 202) {
-        // Remove the deleted content from the state
-        setContents((prevContents) =>
-          prevContents.filter((content) => content._id !== contentId)
-        );
-        console.log("Content deleted successfully");
+    const deletePromise = axios.delete(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/content/?id=${contentId}`,
+      {
+        headers: {
+          Authorization: token,
+        },
       }
-    } catch (error) {
-      console.error("Failed to delete content:", error);
-    }
+    );
+
+    toast.promise(deletePromise, {
+      loading: `Deleting "${contentTitle}"...`,
+      success: (res) => {
+        if (res.status === 202) {
+          // Remove the deleted content from the state
+          setContents((prevContents) =>
+            prevContents.filter((content) => content._id !== contentId)
+          );
+          console.log("Content deleted successfully");
+          return `"${contentTitle}" deleted successfully!`;
+        }
+        return "Content deleted!";
+      },
+      error: (error) => {
+        console.error("Failed to delete content:", error);
+        return `Failed to delete "${contentTitle}"`;
+      },
+    });
   };
 
   return (
@@ -306,7 +391,15 @@ export const ContentArea = () => {
           </Dialog>
 
           {/* Share Contents Dropdown */}
-          <DropdownMenu onOpenChange={(open) => open && handleDropdownOpen()}>
+          <DropdownMenu
+            open={isDropdownOpen}
+            onOpenChange={(open) => {
+              setIsDropdownOpen(open);
+              if (open) {
+                handleDropdownOpen();
+              }
+            }}
+          >
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="cursor-pointer">
                 Share Contents
@@ -335,11 +428,34 @@ export const ContentArea = () => {
                     {copySuccess ? "Copied!" : "Copy"}
                   </Button>
                 </div>
-                {shareLink && (
-                  <p className="text-xs text-muted-foreground">
-                    Anyone with this link can view your shared contents
-                  </p>
-                )}
+
+                {/* Conditional button based on share link existence */}
+                <div className="flex justify-center pt-2">
+                  {!shareLink ? (
+                    <Button
+                      size="sm"
+                      onClick={handleShareContents}
+                      className="text-xs"
+                      disabled={isSharing}
+                    >
+                      {isSharing ? "Generating..." : "Generate Link"}
+                    </Button>
+                  ) : (
+                    <>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Anyone with this link can view your shared contents
+                      </p>
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={handleStopSharing}
+                        className="text-xs cursor-pointer"
+                      >
+                        Stop Sharing
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -365,6 +481,7 @@ export const ContentArea = () => {
                 type={content.type}
                 tags={content.tags}
                 onDelete={handleDeleteContent}
+                onShare={handleShareIndividualContent}
               />
             ))}
 

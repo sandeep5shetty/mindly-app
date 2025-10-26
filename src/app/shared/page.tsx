@@ -42,6 +42,7 @@ function SharedContentsContent() {
   const [debugInfo, setDebugInfo] = useState<ApiResponse | null>(null);
   const searchParams = useSearchParams();
   const shareId = searchParams.get("id");
+  const shareType = searchParams.get("type");
 
   useEffect(() => {
     const fetchSharedContents = async () => {
@@ -52,16 +53,35 @@ function SharedContentsContent() {
       }
 
       try {
-        const apiUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/contents/?id=${shareId}`;
+        let apiUrl;
+
+        // Check if this is a single content share
+        if (shareType === "single") {
+          // For individual content, fetch directly by content ID
+          apiUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/content/${shareId}`;
+        } else {
+          // For collection sharing, use the existing endpoint
+          apiUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/contents/?id=${shareId}`;
+        }
 
         const response = await axios.get(apiUrl);
 
         setDebugInfo(response.data);
 
-        if (response.data.data && Array.isArray(response.data.data)) {
-          setContents(response.data.data);
+        if (shareType === "single") {
+          // For single content, the response should contain the content object
+          if (response.data.data) {
+            setContents([response.data.data]); // Wrap in array for consistent handling
+          } else {
+            setError("Content not found.");
+          }
         } else {
-          setError("No contents found in the shared link.");
+          // For collection sharing, handle as before
+          if (response.data.data && Array.isArray(response.data.data)) {
+            setContents(response.data.data);
+          } else {
+            setError("No contents found in the shared link.");
+          }
         }
       } catch (error) {
         console.error("Failed to fetch shared contents:", error);

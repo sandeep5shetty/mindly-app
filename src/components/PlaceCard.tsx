@@ -36,6 +36,7 @@ interface CardProps {
   images?: string[];
   className?: string;
   onDelete?: (id: string) => void;
+  onShare?: (id: string) => void;
 }
 
 export const PlaceCard = ({
@@ -48,6 +49,7 @@ export const PlaceCard = ({
   images,
   className,
   onDelete,
+  onShare,
 }: CardProps) => {
   const [contentType, setType] = useState(type);
 
@@ -173,7 +175,12 @@ export const PlaceCard = ({
                 onClick={() => onDelete(id)}
               />
             )}
-            <Share2 className="cursor-pointer hover:text-gray-400 duration-200" />
+            {onShare && (
+              <Share2
+                className="cursor-pointer hover:text-gray-400 duration-200"
+                onClick={() => onShare(id)}
+              />
+            )}
           </div>
         </div>
         <motion.div
