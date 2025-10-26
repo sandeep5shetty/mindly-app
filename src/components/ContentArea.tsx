@@ -410,6 +410,11 @@ export const ContentArea = () => {
                       onChange={setTags}
                       placeholder="Add tags"
                     />
+                    {tags.length === 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        Type a tag and press Enter to add it
+                      </p>
+                    )}
                   </div>
                 </div>
                 <DialogFooter>
@@ -446,7 +451,7 @@ export const ContentArea = () => {
                 <IconShare3 className="h-4 w-4 " />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-80 p-4">
+            <DropdownMenuContent className="w-80 p-4 max-sm:mr-3">
               <div className="space-y-3">
                 <h4 className="font-medium text-sm">Share your contents</h4>
                 <div className="flex items-center space-x-2">
@@ -463,7 +468,7 @@ export const ContentArea = () => {
                   <Button
                     size="sm"
                     onClick={handleCopyToClipboard}
-                    className="px-3"
+                    className="px-3 cursor-pointer"
                     disabled={isSharing || !shareLink}
                   >
                     {copySuccess ? "Copied!" : "Copy"}
@@ -476,7 +481,7 @@ export const ContentArea = () => {
                     <Button
                       size="sm"
                       onClick={handleShareContents}
-                      className="text-xs"
+                      className="text-xs cursor-pointer"
                       disabled={isSharing}
                     >
                       {isSharing ? "Generating..." : "Generate Link"}

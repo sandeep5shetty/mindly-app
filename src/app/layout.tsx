@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mindly - Organize and Share Your Content",
+  title: "Mindly - Your personal brain for saving posts, links, and ideas.",
   description:
     "Organize and share your content seamlessly with Mindly. Store, manage, and share links from YouTube, LinkedIn, Instagram, and more.",
   icons: {

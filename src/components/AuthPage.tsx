@@ -136,8 +136,8 @@ export default function AuthPage() {
           className="h-24 w-auto "
         />
         <h1 className="text-2xl font-bold text-foreground">Mindly</h1>
-        <p className="text-sm text-muted-foreground text-center">
-          Organize and share your content seamlessly
+        <p className="text-sm text-muted-foreground text-center max-md:max-w-[80%] max-md:mx-auto">
+          Your personal brain for saving posts, links, and ideas.
         </p>
       </div>
 

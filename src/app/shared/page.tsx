@@ -165,9 +165,6 @@ function SharedContentsContent() {
                 Viewing {contents.length} shared{" "}
                 {contents.length === 1 ? "item" : "items"}
               </p>
-              <p className="text-xs text-muted-foreground">
-                Share ID: {shareId}
-              </p>
             </div>
 
             <div className="grid max-sm:grid-cols-1 grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center place-items-center">
