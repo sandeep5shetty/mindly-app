@@ -44,6 +44,7 @@ interface ContentItem {
     | "threads"
     | "other"
     | undefined;
+  createdAt?: string;
 }
 
 export const ContentArea = () => {
@@ -58,6 +59,14 @@ export const ContentArea = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // Helper function to sort contents by createdAt (newest first)
+  const sortContentsByDate = (contentArray: ContentItem[]): ContentItem[] => {
+    return contentArray.sort((a, b) => {
+      if (!a.createdAt || !b.createdAt) return 0;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -71,7 +80,9 @@ export const ContentArea = () => {
         },
       })
       .then((res) => {
-        setContents(res.data.data);
+        // Sort contents by createdAt in descending order (newest first)
+        const sortedContents = sortContentsByDate(res.data.data);
+        setContents(sortedContents);
       })
       .catch((error) => {
         console.error("Failed to fetch contents:", error);
@@ -124,9 +135,16 @@ export const ContentArea = () => {
       );
 
       console.log("Response : ", res.data.data);
-      setContents([...contents, res.data.data]);
+      // Add new content at the beginning since it's the newest
+      const newContent = res.data.data;
+      const updatedContents = [newContent, ...contents];
+
+      // Sort to maintain chronological order (newest first)
+      const sortedContents = sortContentsByDate(updatedContents);
+
+      setContents(sortedContents);
       console.log("_________________");
-      console.log("Now contents are : ", [...contents, res.data.data]);
+      console.log("Now contents are : ", sortedContents);
 
       // Reset form
       setTitle("");

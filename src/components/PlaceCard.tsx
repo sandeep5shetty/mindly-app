@@ -2,6 +2,15 @@ import * as React from "react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Share2, Trash2 } from "lucide-react";
+import {
+  IconBrandYoutube,
+  IconBrandInstagram,
+  IconBrandFacebook,
+  IconBrandLinkedin,
+  IconBrandThreads,
+  IconBrandX,
+  IconWorld,
+} from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,6 +62,35 @@ export const PlaceCard = ({
 }: CardProps) => {
   const [contentType, setType] = useState(type);
 
+  // Function to get brand icon based on content type
+  const getBrandIcon = (type: string | undefined) => {
+    const iconProps = { size: 32, className: "text-muted-foreground" };
+
+    switch (type) {
+      case "youtube":
+        return <IconBrandYoutube {...iconProps} className="text-red-500" />;
+      case "insta":
+        return <IconBrandInstagram {...iconProps} className="text-pink-500" />;
+      case "facebook":
+        return <IconBrandFacebook {...iconProps} className="text-blue-600" />;
+      case "linkedin":
+        return <IconBrandLinkedin {...iconProps} className="text-blue-700" />;
+      case "threads":
+        return (
+          <IconBrandThreads
+            {...iconProps}
+            className="text-black dark:text-white"
+          />
+        );
+      case "x":
+        return (
+          <IconBrandX {...iconProps} className="text-black dark:text-white" />
+        );
+      default:
+        return <IconWorld {...iconProps} />;
+    }
+  };
+
   // Animation variants for staggering content
   const contentVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -77,22 +115,17 @@ export const PlaceCard = ({
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.5 }}
       variants={contentVariants}
-      whileHover={{
-        scale: 1.01,
-        boxShadow: "0px 10px 30px -5px hsl(var(--foreground) / 0.1)",
-        transition: { duration: 0.2, ease: "easeOut" },
-      }}
       animate={{
         scale: 1,
         boxShadow: "0px 1px 3px 0px hsl(var(--foreground) / 0.1)",
         transition: { duration: 0.2, ease: "easeOut" },
       }}
       className={cn(
-        "w-full max-w-xs overflow-hidden rounded-xl border bg-card text-card-foreground shadow-lg ",
+        "w-full max-w-xs overflow-hidden rounded-xl border bg-card text-card-foreground shadow-lg hover:scale-102 duration-200",
         className
       )}
     >
-      <div className="relative group max-h-48 overflow-y-scroll scrollbar-hide link-section">
+      <div className="relative group max-h-60 overflow-y-scroll scrollbar-hide link-section">
         <div>
           {contentType === "x" && (
             <div className="w-full rounded-b-none overflow-hidden">
@@ -139,7 +172,7 @@ export const PlaceCard = ({
               >
                 {" "}
                 <a href={`${link}`}>
-                  <div> View on Threads</div>
+                  <div className="text-center"> Loading.....</div>
                 </a>
               </blockquote>
               <script async src="https://www.threads.com/embed.js"></script>
@@ -147,7 +180,11 @@ export const PlaceCard = ({
           )}
 
           {contentType === "other" && (
-            <a className="text-blue-600 underline" href={`${link}`}>
+            <a
+              className="text-blue-600 underline text-center inline-block"
+              target="_blank"
+              href={`${link}`}
+            >
               {link}
             </a>
           )}
@@ -156,13 +193,13 @@ export const PlaceCard = ({
 
       {/* Content Section */}
       <motion.div variants={contentVariants} className="p-5 pt-3 space-y-4">
-        <div className="flex justify-between">
-          <div className="flex gap-1 ">
+        <div className="flex justify-between items-center">
+          <div className="flex gap-1 flex-wrap">
             {tags?.map((tag, index) => (
               <Badge
                 key={tag._id || tag.title || index}
                 variant="outline"
-                className="bg-background/70 backdrop-blur-sm"
+                className="bg-gray-300 text-neutral-900 backdrop-blur-sm px-2 py-0.5"
               >
                 {tag.title}
               </Badge>
@@ -196,21 +233,29 @@ export const PlaceCard = ({
         >
           {description}
         </motion.p>
-        <motion.p
-          variants={itemVariants}
-          className="text-sm text-muted-foreground leading-relaxed"
-        >
-          Type : {contentType}
-        </motion.p>
 
         <motion.div
           variants={itemVariants}
           className="flex justify-between items-center pt-2"
         >
-          <Button className="group">
+          <Button
+            className="group cursor-pointer"
+            onClick={() => {
+              if (link) {
+                window.open(link, "_blank", "noopener,noreferrer");
+              }
+            }}
+            disabled={!link}
+          >
             View More
             <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
           </Button>
+          <motion.div
+            variants={itemVariants}
+            className="flex items-center gap-2"
+          >
+            {getBrandIcon(contentType)}
+          </motion.div>
         </motion.div>
       </motion.div>
     </motion.div>
