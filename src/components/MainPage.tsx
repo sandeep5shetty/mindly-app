@@ -1,6 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import axios from "axios";
 import { Sidebar, SidebarBody, SidebarLink } from "./ui/sidebar";
 import {
   IconArrowLeft,
@@ -14,8 +16,37 @@ import { ContentArea } from "./ContentArea";
 export function MainPage() {
   const router = useRouter();
 
+  // Initialize username state
+  const [username, setUsername] = useState<string>("User");
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/me`,
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          );
+          if (response.data.username) {
+            setUsername(response.data.username);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user info:", error);
+        }
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("username"); // Also remove stored username
     router.push("/");
   };
 
@@ -71,16 +102,10 @@ export function MainPage() {
           <div>
             <SidebarLink
               link={{
-                label: "Sandeep Shetty",
+                label: username,
                 href: "#",
                 icon: (
-                  <img
-                    src="https://assets.aceternity.com/manu.png"
-                    className="h-7 w-7 shrink-0 rounded-full"
-                    width={50}
-                    height={50}
-                    alt="Avatar"
-                  />
+                  <IconUserBolt className="h-7 w-7 shrink-0 text-neutral-700 dark:text-neutral-200" />
                 ),
               }}
             />
@@ -97,7 +122,13 @@ export const Logo = () => {
       href="#"
       className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
     >
-      <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
+      <Image
+        src="/mindly.svg"
+        alt="Mindly Logo"
+        width={32}
+        height={32}
+        className="h-8 w-8 shrink-0"
+      />
       <motion.span
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -114,7 +145,13 @@ export const LogoIcon = () => {
       href="#"
       className="relative z-20 flex items-center space-x-2 py-1 text-sm font-normal text-black"
     >
-      <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
+      <Image
+        src="/mindly.svg"
+        alt="Mindly Logo"
+        width={32}
+        height={32}
+        className="h-8 w-8 shrink-0"
+      />
     </a>
   );
 };

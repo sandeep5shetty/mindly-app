@@ -78,6 +78,24 @@ export const ContentArea = () => {
       });
   }, []);
 
+  // Helper function to extract src attribute value for Facebook and LinkedIn
+  const extractSrcFromIframe = (inputLink: string, type: string): string => {
+    // Check if the type is facebook or linkedin
+    if (type !== "facebook" && type !== "linkedin") {
+      return inputLink; // Return original link if not facebook or linkedin
+    }
+
+    // Extract src attribute value using regex
+    const srcMatch = inputLink.match(/src=["']([^"']+)["']/);
+    if (srcMatch && srcMatch[1]) {
+      console.log(`Extracted src from ${type}:`, srcMatch[1]);
+      return srcMatch[1];
+    }
+
+    // Return original link if no src attribute found
+    return inputLink;
+  };
+
   const handleCreateContent = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -86,10 +104,13 @@ export const ContentArea = () => {
     }
 
     try {
+      // Extract src from iframe for facebook and linkedin content
+      const processedLink = extractSrcFromIframe(link, contentType);
+
       const res = await axios.put(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/content/create`,
         {
-          link: link,
+          link: processedLink, // Use processed link instead of original
           type: contentType,
           title: title,
           description: desc,

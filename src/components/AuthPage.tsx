@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -124,141 +125,158 @@ export default function AuthPage() {
     }
   };
   return (
-    <Tabs defaultValue="signup" className="w-[400px] bg-muted rounded-lg">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="signup">Sign Up </TabsTrigger>
-        <TabsTrigger value="signin">Sign In </TabsTrigger>
-      </TabsList>
+    <div className="flex flex-col items-center space-y-6">
+      {/* Logo */}
+      <div className="flex flex-col items-center space-y-2">
+        <Image
+          src="/mindly.svg"
+          alt="Mindly Logo"
+          width={96}
+          height={96}
+          className="h-24 w-auto"
+        />
+        <h1 className="text-2xl font-bold text-foreground">Mindly</h1>
+        <p className="text-sm text-muted-foreground text-center">
+          Organize and share your content seamlessly
+        </p>
+      </div>
 
-      <TabsContents className="mx-1 mb-1 -mt-2 rounded-sm h-full bg-background">
-        <TabsContent value="signup" className="space-y-6 p-6">
-          <p className="text-sm text-muted-foreground">
-            Create your new account with Username and Password.
-          </p>
+      <Tabs defaultValue="signin" className="w-[400px] bg-muted rounded-lg">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="signin">Sign In </TabsTrigger>
+          <TabsTrigger value="signup">Sign Up </TabsTrigger>
+        </TabsList>
 
-          {error && (
-            <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
-              {error}
-            </div>
-          )}
+        <TabsContents className="mx-1 mb-1 -mt-2 rounded-sm h-full bg-background">
+          <TabsContent value="signin" className="space-y-6 p-6">
+            <p className="text-sm text-muted-foreground">
+              Sign in to your account.
+            </p>
 
-          <form className="space-y-3" onSubmit={handleSignUp}>
-            <div className="space-y-1">
-              <Label htmlFor="signup-username">Username</Label>
-              <Input
-                id="signup-username"
-                value={signUpData.username}
-                onChange={(e) =>
-                  setSignUpData((prev) => ({
-                    ...prev,
-                    username: e.target.value,
-                  }))
-                }
-                required
-                disabled={isLoading}
-                minLength={3}
-                maxLength={25}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="signup-password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="signup-password"
-                  type={showSignUpPassword ? "text" : "password"}
-                  value={signUpData.password}
-                  onChange={(e) =>
-                    setSignUpData((prev) => ({
-                      ...prev,
-                      password: e.target.value,
-                    }))
-                  }
-                  className="pr-10"
-                  required
-                  disabled={isLoading}
-                  minLength={3}
-                  maxLength={35}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowSignUpPassword(!showSignUpPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                  disabled={isLoading}
-                >
-                  {showSignUpPassword ? <EyeClose /> : <Eye />}
-                </button>
+            {error && (
+              <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
+                {error}
               </div>
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Creating Account..." : "Sign Up"}
-            </Button>
-          </form>
-        </TabsContent>
+            )}
 
-        <TabsContent value="signin" className="space-y-6 p-6">
-          <p className="text-sm text-muted-foreground">
-            Sign in to your account.
-          </p>
-
-          {error && (
-            <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
-              {error}
-            </div>
-          )}
-
-          <form className="space-y-3" onSubmit={handleSignIn}>
-            <div className="space-y-1">
-              <Label htmlFor="signin-username">Username</Label>
-              <Input
-                id="signin-username"
-                value={signInData.username}
-                onChange={(e) =>
-                  setSignInData((prev) => ({
-                    ...prev,
-                    username: e.target.value,
-                  }))
-                }
-                required
-                disabled={isLoading}
-                minLength={3}
-                maxLength={25}
-              />
-            </div>
-            <div className="space-y-1">
-              <Label htmlFor="signin-password">Password</Label>
-              <div className="relative">
+            <form className="space-y-3" onSubmit={handleSignIn}>
+              <div className="space-y-1">
+                <Label htmlFor="signin-username">Username</Label>
                 <Input
-                  id="signin-password"
-                  type={showSignInPassword ? "text" : "password"}
-                  value={signInData.password}
+                  id="signin-username"
+                  value={signInData.username}
                   onChange={(e) =>
                     setSignInData((prev) => ({
                       ...prev,
-                      password: e.target.value,
+                      username: e.target.value,
                     }))
                   }
-                  className="pr-10"
                   required
                   disabled={isLoading}
                   minLength={3}
-                  maxLength={35}
+                  maxLength={25}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowSignInPassword(!showSignInPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-                  disabled={isLoading}
-                >
-                  {showSignInPassword ? <EyeClose /> : <Eye />}
-                </button>
               </div>
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing In..." : "Sign In"}
-            </Button>
-          </form>
-        </TabsContent>
-      </TabsContents>
-    </Tabs>
+              <div className="space-y-1">
+                <Label htmlFor="signin-password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="signin-password"
+                    type={showSignInPassword ? "text" : "password"}
+                    value={signInData.password}
+                    onChange={(e) =>
+                      setSignInData((prev) => ({
+                        ...prev,
+                        password: e.target.value,
+                      }))
+                    }
+                    className="pr-10"
+                    required
+                    disabled={isLoading}
+                    minLength={3}
+                    maxLength={35}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSignInPassword(!showSignInPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    disabled={isLoading}
+                  >
+                    {showSignInPassword ? <EyeClose /> : <Eye />}
+                  </button>
+                </div>
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Signing In..." : "Sign In"}
+              </Button>
+            </form>
+          </TabsContent>
+
+          <TabsContent value="signup" className="space-y-6 p-6">
+            <p className="text-sm text-muted-foreground">
+              Create your new account with Username and Password.
+            </p>
+
+            {error && (
+              <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
+                {error}
+              </div>
+            )}
+
+            <form className="space-y-3" onSubmit={handleSignUp}>
+              <div className="space-y-1">
+                <Label htmlFor="signup-username">Username</Label>
+                <Input
+                  id="signup-username"
+                  value={signUpData.username}
+                  onChange={(e) =>
+                    setSignUpData((prev) => ({
+                      ...prev,
+                      username: e.target.value,
+                    }))
+                  }
+                  required
+                  disabled={isLoading}
+                  minLength={3}
+                  maxLength={25}
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="signup-password">Password</Label>
+                <div className="relative">
+                  <Input
+                    id="signup-password"
+                    type={showSignUpPassword ? "text" : "password"}
+                    value={signUpData.password}
+                    onChange={(e) =>
+                      setSignUpData((prev) => ({
+                        ...prev,
+                        password: e.target.value,
+                      }))
+                    }
+                    className="pr-10"
+                    required
+                    disabled={isLoading}
+                    minLength={3}
+                    maxLength={35}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSignUpPassword(!showSignUpPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                    disabled={isLoading}
+                  >
+                    {showSignUpPassword ? <EyeClose /> : <Eye />}
+                  </button>
+                </div>
+              </div>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Creating Account..." : "Sign Up"}
+              </Button>
+            </form>
+          </TabsContent>
+        </TabsContents>
+      </Tabs>
+    </div>
   );
 }
